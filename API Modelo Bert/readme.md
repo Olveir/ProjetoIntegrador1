@@ -1,699 +1,462 @@
-🐍 Guia de Instalação e Execução - API Reptile 
+🐍 Guia de Instalação e Execução - API Reptile
+📋 Visão Geral
+Esta API Flask é um sistema de classificação de texto que utiliza modelos PyTorch (.pt) para categorizar textos em 10 categorias diferentes. O sistema foi projetado para trabalhar especificamente com modelos LLM (Large Language Models) salvos no formato PyTorch.
 
-📋 Visão Geral 
+🔧 Pré-requisitos
+Versões Recomendadas
+Python: 3.8 ou superior
 
-Esta API Flask é um sistema de classificação de texto usando modelos PyTorch (.pt) para categorizar textos em 10 categorias diferentes. O sistema foi projetado para trabalhar com modelos LLM salvos no formato PyTorch. 
+Sistema Operacional: Windows, Linux ou macOS
 
-🔧 Pré-requisitos 
+RAM: Pelo menos 4GB de RAM livre
 
-Versões Recomendadas 
+Espaço em Disco: 2GB para dependências
 
-Python 3.8 ou superior 
+Ferramentas Necessárias
+Git (opcional, para controle de versão)
 
-Sistema operacional: Windows, Linux ou macOS 
+Editor de código (VS Code, PyCharm, etc.)
 
-Pelo menos 4GB de RAM livre 
+Terminal/Prompt de comando
 
-Espaço em disco: 2GB para dependências 
+📁 Estrutura de Pastas Necessária
+Antes de começar, crie a seguinte estrutura de pastas no seu projeto:
 
-Ferramentas Necessárias 
+seu-projeto/
+├── app.py                      # Arquivo principal da API (seu código)
+├── models/                     # Pasta para o modelo
+│   └── llama-pth-checkpoint/
+│       └── melhor_modelo_pt.pt # Seu modelo treinado
+├── uploads/                    # Pasta para uploads (criada automaticamente)
+├── requirements.txt            # Dependências (será criado)
+└── README.md                   # Documentação
 
-Git (opcional, para controle de versão) 
+🚀 Passo a Passo para Instalação
+Passo 1: Preparar o Ambiente
+1.1 Criar pasta do projeto
+mkdir api-reptile
+cd api-reptile
 
-Editor de código (VS Code, PyCharm, etc.) 
+1.2 Criar ambiente virtual (OBRIGATÓRIO)
+Windows
 
-Terminal/Prompt de comando 
+python -m venv venv
+venv\Scripts\activate
 
-📁 Estrutura de Pastas Necessária 
+Linux/macOS
 
-Antes de começar, crie a seguinte estrutura de pastas: 
+python3 -m venv venv
+source venv/bin/activate
 
-seu-projeto/ 
+⚠️ IMPORTANTE: Sempre ative o ambiente virtual antes de instalar pacotes!
 
-├── app.py                     # Arquivo principal da API (seu código) 
+Passo 2: Instalar Dependências
+2.1 Criar arquivo requirements.txt
+Crie um arquivo chamado requirements.txt na raiz do seu projeto com o seguinte conteúdo:
 
-├── models/                    # Pasta para o modelo 
+Flask==2.3.3
+Flask-CORS==4.0.0
+torch==2.0.1
+pandas==2.0.3
+numpy==1.24.3
+Werkzeug==2.3.7
+transformers==4.30.0
 
-│   └── llama-pth-checkpoint/ 
+⚠️ IMPORTANTE: A versão BERT requer a biblioteca transformers para o tokenizer!
 
-│       └── melhor_modelo_pt.pt  # Seu modelo treinado 
+2.2 Instalar pacotes
+pip install -r requirements.txt
 
-├── uploads/                   # Pasta para uploads (criada automaticamente) 
+Alternativa manual:
 
-├── requirements.txt           # Dependências (será criado) 
+pip install Flask Flask-CORS torch pandas numpy Werkzeug transformers
 
-└── README.md                 # Documentação 
+⚠️ ATENÇÃO: Se você tiver problemas com a instalação do transformers, tente:
 
- 
+pip install transformers --no-cache-dir
 
-🚀 Passo a Passo para Instalação 
+Passo 3: Preparar o Modelo
+3.1 Criar estrutura de pastas
+mkdir -p models/llama-pth-checkpoint
 
-Passo 1: Preparar o Ambiente 
+3.2 Colocar o modelo
+Copie seu arquivo melhor_modelo_pt.pt para models/llama-pth-checkpoint/.
+Certifique-se de que o caminho está correto: models/llama-pth-checkpoint/melhor_modelo_pt.pt.
 
-1.1 Criar pasta do projeto 
+Passo 4: Configurar o Código BERT
+4.1 Salvar o código corrigido
+IMPORTANTE: Use o código BERT corrigido (não o código original com features manuais).
+Salve como app.py na pasta raiz do projeto.
 
-mkdir api-reptile 
+4.2 Primeira execução (Download do BERT)
+Na primeira execução, o sistema baixará automaticamente:
 
-cd api-reptile 
+Modelo BERT: neuralmind/bert-base-portuguese-cased (~400MB)
 
- 
+Tokenizer: Vocabulário e configurações
 
-1.2 Criar ambiente virtual (OBRIGATÓRIO) 
+# A primeira execução pode demorar para baixar o BERT
+python app.py
 
-# Windows 
+⚠️ IMPORTANTE: Certifique-se de ter uma conexão com a internet estável!
 
-python -m venv venv 
+Passo 5: Testar a Instalação
+5.1 Verificar dependências BERT
+python -c "import flask, torch, pandas, numpy, transformers; print('Todas as dependências BERT instaladas com sucesso!')"
 
-venv\Scripts\activate 
+5.2 Testar o tokenizer BERT
+python -c "from transformers import BertTokenizer; tokenizer = BertTokenizer.from_pretrained('neuralmind/bert-base-portuguese-cased'); print('Tokenizer BERT funcionando!')"
 
- 
+5.3 Verificar o modelo
+python -c "import os; print('Modelo encontrado:', os.path.exists('models/llama-pth-checkpoint/melhor_modelo_pt.pt'))"
 
-# Linux/macOS 
+▶️ Executando a API
+Método 1: Execução Direta
+python app.py
 
-python3 -m venv venv 
+Método 2: Usando Flask (alternativo)
+# Linux/macOS
+export FLASK_APP=app.py
 
-source venv/bin/activate 
+# Windows
+set FLASK_APP=app.py
 
- 
+flask run --host=0.0.0.0 --port=5000
 
-⚠️ IMPORTANTE: Sempre ative o ambiente virtual antes de instalar pacotes! 
+🎯 Verificando se Funcionou
+Se tudo estiver correto, você verá uma mensagem similar a:
 
-Passo 2: Instalar Dependências 
+🐍 API REPTILE CORRIGIDA - v2.0_fixed
 
-2.1 Criar arquivo requirements.txt 
+Status: ✅ OK
+Modelo: ✅ Carregado
+Categorias: 10 disponíveis
+...
+* Running on all addresses (0.0.0.0)
+* Running on http://127.0.0.1:5000
+* Running on http://[seu-ip]:5000
 
-Crie um arquivo chamado requirements.txt com o seguinte conteúdo: 
+🧪 Testando a API
+Teste 1: Health Check
+curl http://localhost:5000/health
 
-Flask==2.3.3 
+Teste 2: Categorias Disponíveis
+curl http://localhost:5000/categorias
 
-Flask-CORS==4.0.0 
+Teste 3: Classificação de Texto
+curl -X POST http://localhost:5000/classify \
+  -H "Content-Type: application/json" \
+  -d '{"text": "Como você está se sentindo hoje?"}'
 
-torch==2.0.1 
+Teste 4: Teste Forçado (IMPORTANTE)
+curl -X POST http://localhost:5000/force-test \
+  -H "Content-Type: application/json" \
+  -d '{}'
 
-pandas==2.0.3 
+🔧 Endpoints da API BERT
+Método
 
-numpy==1.24.3 
+Endpoint
 
-Werkzeug==2.3.7 
+Descrição
 
-transformers==4.30.0 
+Novo/Modificado
 
- 
+GET
 
-⚠️ IMPORTANTE: A versão BERT requer a biblioteca transformers para o tokenizer! 
+/
 
-2.2 Instalar pacotes 
+Informações básicas da API BERT
 
-pip install -r requirements.txt 
+✅ Atualizado
 
- 
+GET
 
-Alternativa manual: 
+/health
 
-pip install Flask Flask-CORS torch pandas numpy Werkzeug transformers 
+Status BERT + Tokenizer
 
- 
+✅ Atualizado
 
-⚠️ ATENÇÃO: Se você tiver problemas com a instalação do transformers, tente: 
+GET
 
-pip install transformers --no-cache-dir 
+/categorias
 
- 
+Lista de categorias terapêuticas
 
-Passo 3: Preparar o Modelo 
+✅ Atualizado
 
-3.1 Criar estrutura de pastas 
+POST
 
-mkdir -p models/llama-pth-checkpoint 
+/classify
 
- 
+Classifica texto (com contexto opcional)
 
-3.2 Colocar o modelo 
+🆕 Novo formato
 
-Copie seu arquivo melhor_modelo_pt.pt para models/llama-pth-checkpoint/ 
+POST
 
-Certifique-se de que o caminho está correto: models/llama-pth-checkpoint/melhor_modelo_pt.pt 
+/classify-batch
 
-Passo 4: Configurar o Código BERT 
+Múltiplos textos ou interações
 
-4.1 Salvar o código corrigido 
+🆕 Novo formato
 
-IMPORTANTE: Use o código BERT corrigido (não o código original com features manuais) 
+POST
 
-Salve como app.py na pasta raiz do projeto 
+/test-tokenizer
 
-4.2 Primeira execução (Download do BERT) 
+Testa tokenização BERT
 
-Na primeira execução, o sistema baixará automaticamente: 
+🆕 Novo
 
-Modelo BERT: neuralmind/bert-base-portuguese-cased (~400MB) 
+POST
 
-Tokenizer: Vocabulário e configurações 
+/force-test-bert
 
-# Primeira execução pode demorar para baixar o BERT 
+Teste forçado categorias específicas
 
-python app.py 
+🆕 Novo
 
- 
+POST
 
-⚠️ IMPORTANTE: Certifique-se de ter conexão com internet estável! 
+/processar
 
-Passo 5: Testar a Instalação 
+CSV com Fala_Terapeuta + Fala_Cliente
 
-5.1 Verificar dependências BERT 
+✅ Atualizado
 
-python -c "import flask, torch, pandas, numpy, transformers; print('Todas as dependências BERT instaladas com sucesso!')" 
+📋 Novos Formatos de Requisição
+Classificação Individual:
+{
+  "text": "Como você está se sentindo hoje?",
+  "contexto_cliente": "Estou ansioso" // Opcional
+}
 
- 
+Lote Simples:
+{
+  "texts": [
+    "Como você está?",
+    "Entendo sua dificuldade"
+  ]
+}
 
-5.2 Testar o tokenizer BERT 
+Lote com Contexto:
+{
+  "interacoes": [
+    {
+      "texto": "Como você está?",
+      "contexto_cliente": "Estou ansioso"
+    }
+  ]
+}
 
-python -c "from transformers import BertTokenizer; tokenizer = BertTokenizer.from_pretrained('neuralmind/bert-base-portuguese-cased'); print('Tokenizer BERT funcionando!')" 
+❌ Problemas Comuns BERT e Soluções
+Problema 1: "Tokenizer não carregado"
+Causa: Biblioteca transformers não instalada ou modelo BERT não baixado.
+Solução:
 
- 
+# Reinstalar transformers
+pip uninstall transformers
+pip install transformers --no-cache-dir
 
-5.2 Verificar o modelo 
+# Verificar conexão de internet
+python -c "from transformers import BertTokenizer; BertTokenizer.from_pretrained('neuralmind/bert-base-portuguese-cased')"
 
-python -c "import os; print('Modelo encontrado:', os.path.exists('models/llama-pth-checkpoint/melhor_modelo_pt.pt'))" 
+Problema 2: "HTTP 404 - neuralmind/bert-base-portuguese-cased"
+Causa: Problema de conectividade com HuggingFace.
+Solução:
 
- 
+# Usar proxy ou VPN se necessário
+export HF_ENDPOINT=https://huggingface.co
 
-▶️ Executando a API 
+# Download manual
+python -c "
+from transformers import BertTokenizer, BertForSequenceClassification
+tokenizer = BertTokenizer.from_pretrained('neuralmind/bert-base-portuguese-cased')
+model = BertForSequenceClassification.from_pretrained('neuralmind/bert-base-portuguese-cased', num_labels=10)
+print('Download concluído!')
+"
 
-Método 1: Execução Direta 
+Problema 3: "BERT sempre retorna mesma categoria"
+Causa: Modelo .pt não é compatível com BERT.
+Solução:
 
-python app.py 
+Execute o teste forçado: POST /force-test-bert
 
- 
+Verifique se o modelo foi treinado com BERT.
 
-Método 2: Usando Flask (alternativo) 
+CRÍTICO: O modelo deve ter sido salvo após treinamento com model.state_dict().
 
-export FLASK_APP=app.py  # Linux/macOS 
+Problema 4: "OutOfMemoryError"
+Causa: BERT consome muita RAM.
+Solução:
 
-set FLASK_APP=app.py     # Windows 
+# Reduzir batch size no código ou usar CPU
+export CUDA_VISIBLE_DEVICES="" # Forçar CPU
 
-flask run --host=0.0.0.0 --port=5000 
+# Ou adicionar no código:
+device = torch.device("cpu")   # Sempre usar CPU
 
- 
+Problema 5: "Erro ao carregar state_dict"
+Causa: Incompatibilidade entre modelo treinado e arquitetura.
+Solução:
 
-🎯 Verificando se Funcionou 
+# Verificar as chaves do modelo salvo
+import torch
+checkpoint = torch.load('models/llama-pth-checkpoint/melhor_modelo_pt.pt', map_location='cpu')
+print("Tipo:", type(checkpoint))
+if isinstance(checkpoint, dict):
+    print("Chaves:", list(checkpoint.keys())[:10])
 
-Se tudo estiver correto, você verá uma mensagem similar a: 
+🔍 Diagnóstico Avançado
+Verificar Logs
+# Executar com logs detalhados
+python app.py 2>&1 | tee app.log
 
-🐍 API REPTILE CORRIGIDA - v2.0_fixed 
+Testar Modelo Manualmente
+import torch
 
- 
+# Carregar modelo
+model = torch.load('models/llama-pth-checkpoint/melhor_modelo_pt.pt', map_location='cpu')
+print(f"Tipo do modelo: {type(model)}")
+print(f"Chaves (se dict): {list(model.keys()) if isinstance(model, dict) else 'Não é dict'}")
 
-Status: ✅ OK 
+Verificar Features
+# Testar extração de features
+from app import extract_simple_features
+features = extract_simple_features("Texto de teste", target_size=3072)
+print(f"Shape: {features.shape}")
+print(f"Valores únicos: {len(torch.unique(features))}")
 
-Modelo: ✅ Carregado 
+📝 Uso em Produção
+Configurações Recomendadas
+Substitua na linha final do app.py:
 
-Categorias: 10 disponíveis 
+if __name__ == '__main__':
+    app.run(
+        debug=False,         # Desabilitar debug
+        host='0.0.0.0',      # Aceitar conexões externas
+        port=5000,           # Porta padrão
+        threaded=True        # Permitir múltiplas conexões
+    )
 
-... 
+Usando Gunicorn (Recomendado)
+pip install gunicorn
+gunicorn --bind 0.0.0.0:5000 --workers 4 app:app
 
-* Running on all addresses (0.0.0.0) 
+🔐 Segurança
+Configurações de Segurança
+Desabilite CORS em produção (remova origins=["*"]).
 
-* Running on http://127.0.0.1:5000 
+Use HTTPS em produção.
 
-* Running on http://[seu-ip]:5000 
+Implemente autenticação se necessário.
 
- 
+Limite o tamanho dos uploads.
 
-🧪 Testando a API 
+Exemplo de Configuração Segura
+CORS(app, origins=["http://localhost:3000", "https://seudorminio.com"])
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max
 
-Teste 1: Health Check 
+📊 Monitoramento
+Logs de Produção
+import logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler('api.log'),
+        logging.StreamHandler()
+    ]
+)
 
-curl http://localhost:5000/health 
+🆘 Suporte
+Checklist de Verificação
+[ ] Python 3.8+ instalado
 
- 
+[ ] Ambiente virtual ativado
 
-Teste 2: Categorias Disponíveis 
+[ ] Dependências instaladas
 
-curl http://localhost:5000/categorias 
+[ ] Modelo na pasta correta
 
- 
+[ ] Permissões corretas
 
-Teste 3: Classificação de Texto 
+[ ] Porta 5000 livre
 
-curl -X POST http://localhost:5000/classify \ 
+[ ] Teste forçado executado
 
-  -H "Content-Type: application/json" \ 
+Comandos de Debug
+# Verificar versão Python
+python --version
 
-  -d '{"text": "Como você está se sentindo hoje?"}' 
+# Verificar pacotes instalados
+pip list
 
- 
+# Verificar estrutura de pastas
+find . -type f -name "*.pt"
 
-Teste 4: Teste Forçado (IMPORTANTE) 
+# Verificar logs
+tail -f app.log
 
-curl -X POST http://localhost:5000/force-test \ 
+🎉 Pronto para Usar!
+Se você seguiu todos os passos, sua API BERT deve estar funcionando em:
 
-  -H "Content-Type: application/json" \ 
+URL Local: http://localhost:5000
 
-  -d '{}' 
+Health Check: http://localhost:5000/health
 
- 
+Interface HTML: Use o arquivo teste_api_bert.html fornecido.
 
-🔧 Endpoints da API BERT 
+✅ Checklist Final BERT
+[ ] Python 3.8+ instalado
 
-Método 
+[ ] Ambiente virtual ativado
 
-Endpoint 
+[ ] Dependências instaladas (incluindo transformers)
 
-Descrição 
+[ ] Modelo .pt na pasta correta
 
-Novo/Modificado 
+[ ] Primeira execução completada (BERT baixado)
 
-GET 
+[ ] Teste de health retorna tokenizer_loaded: true
 
-/ 
+[ ] Teste BERT forçado executado com sucesso
 
-Informações básicas da API BERT 
+🎯 Próximos Passos BERT:
+Execute o teste BERT forçado (POST /force-test-bert) - CRÍTICO
 
-✅ Atualizado 
+Teste com contexto - use cliente + terapeuta
 
-GET 
+Processe CSVs com colunas Fala_Terapeuta e Fala_Cliente
 
-/health 
+Use a interface HTML para testes visuais
 
-Status BERT + Tokenizer 
+Configure para produção se aplicável
 
-✅ Atualizado 
+🚨 Se Algo Não Funcionar:
+Verifique os logs para mensagens de erro.
 
-GET 
+Execute todos os testes da seção "Testando a API BERT".
 
-/categorias 
+Confirme que o modelo foi treinado com BERT (não features manuais).
 
-Lista de categorias terapêuticas 
+Verifique se há conexão com internet (para download do BERT).
 
-✅ Atualizado 
+Lembre-se: Esta versão usa BERT português e é incompatível com modelos treinados com features manuais!
 
-POST 
+🔄 Migração da Versão Antiga
+Se você tinha a versão com features manuais:
 
-/classify 
+Faça um backup do código antigo.
 
-Classifica texto (com contexto opcional) 
+Substitua completamente pelo código BERT.
 
-🆕 Novo formato 
+Retreine o modelo usando o script de treinamento BERT.
 
-POST 
+Teste a nova versão.
 
-/classify-batch 
+Não é possível usar modelos antigos com a nova API BERT!
 
-Múltiplos textos ou interações 
-
-🆕 Novo formato 
-
-POST 
-
-/test-tokenizer 
-
-Testa tokenização BERT 
-
-🆕 Novo 
-
-POST 
-
-/force-test-bert 
-
-Teste forçado categorias específicas 
-
-🆕 Novo 
-
-POST 
-
-/processar 
-
-CSV com Fala_Terapeuta + Fala_Cliente 
-
-✅ Atualizado 
-
-📋 Novos Formatos de Requisição 
-
-Classificação Individual: 
-
-{ 
-
-  "text": "Como você está se sentindo hoje?", 
-
-  "contexto_cliente": "Estou ansioso" // Opcional 
-
-} 
-
- 
-
-Lote Simples: 
-
-{ 
-
-  "texts": [ 
-
-    "Como você está?", 
-
-    "Entendo sua dificuldade" 
-
-  ] 
-
-} 
-
- 
-
-Lote com Contexto: 
-
-{ 
-
-  "interacoes": [ 
-
-    { 
-
-      "texto": "Como você está?", 
-
-      "contexto_cliente": "Estou ansioso" 
-
-    } 
-
-  ] 
-
-} 
-
- 
-
-❌ Problemas Comuns BERT e Soluções 
-
-Problema 1: "Tokenizer não carregado" 
-
-Causa: Biblioteca transformers não instalada ou modelo BERT não baixado Solução: 
-
-# Reinstalar transformers 
-
-pip uninstall transformers 
-
-pip install transformers --no-cache-dir 
-
- 
-
-# Verificar conexão de internet 
-
-python -c "from transformers import BertTokenizer; BertTokenizer.from_pretrained('neuralmind/bert-base-portuguese-cased')" 
-
- 
-
-Problema 2: "HTTP 404 - neuralmind/bert-base-portuguese-cased" 
-
-Causa: Problema de conectividade com HuggingFace Solução: 
-
-# Usar proxy ou VPN se necessário 
-
-export HF_ENDPOINT=https://huggingface.co 
-
- 
-
-# Download manual 
-
-python -c " 
-
-from transformers import BertTokenizer, BertForSequenceClassification 
-
-tokenizer = BertTokenizer.from_pretrained('neuralmind/bert-base-portuguese-cased') 
-
-model = BertForSequenceClassification.from_pretrained('neuralmind/bert-base-portuguese-cased', num_labels=10) 
-
-print('Download concluído!') 
-
-" 
-
- 
-
-Problema 3: "BERT sempre retorna mesma categoria" 
-
-Causa: Modelo .pt não é compatível com BERT Solução: 
-
-Execute o teste forçado: POST /force-test-bert 
-
-Verifique se o modelo foi treinado com BERT 
-
-CRÍTICO: O modelo deve ter sido salvo após treinamento com model.state_dict() 
-
-Problema 4: "OutOfMemoryError" 
-
-Causa: BERT consome muita RAM Solução: 
-
-# Reduzir batch size no código ou usar CPU 
-
-export CUDA_VISIBLE_DEVICES=""  # Forçar CPU 
-
- 
-
-# Ou adicionar no código: 
-
-device = torch.device("cpu")  # Sempre usar CPU 
-
- 
-
-Problema 5: "Erro ao carregar state_dict" 
-
-Causa: Incompatibilidade entre modelo treinado e arquitetura Solução: 
-
-# Verificar as chaves do modelo salvo 
-
-import torch 
-
-checkpoint = torch.load('models/llama-pth-checkpoint/melhor_modelo_pt.pt', map_location='cpu') 
-
-print("Tipo:", type(checkpoint)) 
-
-if isinstance(checkpoint, dict): 
-
-    print("Chaves:", list(checkpoint.keys())[:10]) 
-
- 
-
-🔍 Diagnóstico Avançado 
-
-Verificar Logs 
-
-# Executar com logs detalhados 
-
-python app.py 2>&1 | tee app.log 
-
- 
-
-Testar Modelo Manualmente 
-
-import torch 
-
- 
-
-# Carregar modelo 
-
-model = torch.load('models/llama-pth-checkpoint/melhor_modelo_pt.pt', map_location='cpu') 
-
-print(f"Tipo do modelo: {type(model)}") 
-
-print(f"Chaves (se dict): {list(model.keys()) if isinstance(model, dict) else 'Não é dict'}") 
-
- 
-
-Verificar Features 
-
-# Testar extração de features 
-
-from app import extract_simple_features 
-
-features = extract_simple_features("Texto de teste", target_size=3072) 
-
-print(f"Shape: {features.shape}") 
-
-print(f"Valores únicos: {len(torch.unique(features))}") 
-
- 
-
-📝 Uso em Produção 
-
-Configurações Recomendadas 
-
-# Substituir na linha final do app.py 
-
-if __name__ == '__main__': 
-
-    app.run( 
-
-        debug=False,           # Desabilitar debug 
-
-        host='0.0.0.0',       # Aceitar conexões externas 
-
-        port=5000,            # Porta padrão 
-
-        threaded=True         # Permitir múltiplas conexões 
-
-    ) 
-
- 
-
-Usando Gunicorn (Recomendado) 
-
-pip install gunicorn 
-
-gunicorn --bind 0.0.0.0:5000 --workers 4 app:app 
-
- 
-
-🔐 Segurança 
-
-Configurações de Segurança 
-
-Desabilite CORS em produção (remova origins=["*"]) 
-
-Use HTTPS em produção 
-
-Implemente autenticação se necessário 
-
-Limite o tamanho dos uploads 
-
-Exemplo de Configuração Segura 
-
-CORS(app, origins=["http://localhost:3000", "https://seudorminio.com"]) 
-
-app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max 
-
- 
-
-📊 Monitoramento 
-
-Logs de Produção 
-
-import logging 
-
-logging.basicConfig( 
-
-    level=logging.INFO, 
-
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', 
-
-    handlers=[ 
-
-        logging.FileHandler('api.log'), 
-
-        logging.StreamHandler() 
-
-    ] 
-
-) 
-
- 
-
-🆘 Suporte 
-
-Checklist de Verificação 
-
-[ ] Python 3.8+ instalado 
-
-[ ] Ambiente virtual ativado 
-
-[ ] Dependências instaladas 
-
-[ ] Modelo na pasta correta 
-
-[ ] Permissões corretas 
-
-[ ] Porta 5000 livre 
-
-[ ] Teste forçado executado 
-
-Comandos de Debug 
-
-# Verificar versão Python 
-
-python --version 
-
- 
-
-# Verificar pacotes instalados 
-
-pip list 
-
- 
-
-# Verificar estrutura de pastas 
-
-find . -type f -name "*.pt" 
-
- 
-
-# Verificar logs 
-
-tail -f app.log 
-
- 
-
- 
-
-🎉 Pronto para Usar! 
-
-Se seguiu todos os passos, sua API BERT deve estar funcionando em: 
-
-URL Local: http://localhost:5000 
-
-Health Check: http://localhost:5000/health 
-
-Interface HTML: Use o arquivo teste_api_bert.html fornecido 
-
-✅ Checklist Final BERT 
-
-[ ] Python 3.8+ instalado 
-
-[ ] Ambiente virtual ativado 
-
-[ ] Dependências instaladas (incluindo transformers) 
-
-[ ] Modelo .pt na pasta correta 
-
-[ ] Primeira execução completada (BERT baixado) 
-
-[ ] Teste de health retorna tokenizer_loaded: true 
-
-[ ] Teste BERT forçado executado com sucesso 
-
-🎯 Próximos Passos BERT: 
-
-Execute o teste BERT forçado (POST /force-test-bert) - CRÍTICO 
-
-Teste com contexto - use cliente + terapeuta 
-
-Processe CSVs com colunas Fala_Terapeuta e Fala_Cliente 
-
-Use a interface HTML para testes visuais 
-
-Configure para produção se aplicável 
-
-🚨 Se Algo Não Funcionar: 
-
-Verifique os logs para mensagens de erro 
-
-Execute todos os testes da seção "Testando a API BERT" 
-
-Confirme que o modelo foi treinado com BERT (não features manuais) 
-
-Verifique se há conexão com internet (para download do BERT) 
-
-Lembre-se: Esta versão usa BERT português e é incompatível com modelos treinados com features manuais! 
-
- 
-
-🔄 Migração da Versão Antiga 
-
-Se você tinha a versão com features manuais: 
-
-Backup do código antigo 
-
-Substitua completamente pelo código BERT 
-
-Retreine o modelo usando o script de treinamento BERT 
-
-Teste a nova versão 
-
-Não é possível usar modelos antigos com a nova API BERT! 
-
-Boa sorte com sua API BERT! 🚀🧠 
-
- 
+Boa sorte com sua API BERT! 🚀🧠
