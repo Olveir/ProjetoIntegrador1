@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <title>SiMCCIT - Categorização Terapêutica</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "Segoe UI", Arial, sans-serif;
+        background: linear-gradient(120deg, #e0eafc 0%, #cfdef3 100%);
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+      .main-wrapper {
+        max-width: 100vw;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-height: 100vh;
+        box-sizing: border-box;
+      }
+      header {
+        text-align: center;
+        margin: 24px 0 18px 0;
+        flex-shrink: 0;
+      }
+      header h1 {
+        color: #2366a8;
+        font-size: 2.2rem;
+        margin-bottom: 6px;
+        letter-spacing: 1px;
+      }
+      header p {
+        color: #2980b9;
+        font-size: 1.1rem;
+        margin: 0;
+      }
+      main {
+        width: 100%;
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: stretch; /* Faz os containers terem a mesma altura */
+        gap: clamp(20px, 4vw, 48px);
+        box-sizing: border-box;
+        padding: 0 2vw;
+      }
+      section.container {
+        background: #fff;
+        padding: 32px 24px 24px 24px;
+        border-radius: 18px;
+        flex: 1 1 0; /* Cresce igualmente */
+        min-width: 0;
+        max-width: clamp(320px, 38vw, 700px);
+        box-shadow: 0 8px 40px #0002;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-height: 0;
+        box-sizing: border-box;
+        transition: max-width 0.2s;
+        /* height e overflow removidos! */
+      }
+      h2 {
+        color: #2980b9;
+        margin-top: 0;
+        margin-bottom: 18px;
+        font-size: 1.18rem;
+        text-align: center;
+        width: 100%;
+      }
+      form {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      label {
+        font-weight: 500;
+        color: #2c3e50;
+        margin-bottom: 4px;
+        display: block;
+        width: 100%;
+        text-align: left;
+        max-width: 650px;
+      }
+      textarea,
+      input[type="file"] {
+        width: 100%;
+        font-size: 1.05rem;
+        border: 1.5px solid #dbe9f6;
+        border-radius: 8px;
+        padding: 10px;
+        margin-bottom: 14px;
+        background: #f8fbff;
+        transition: border 0.2s;
+        max-width: 650px;
+        box-sizing: border-box;
+      }
+      textarea {
+        min-height: 100px;
+        resize: none;
+      }
+      textarea:focus,
+      input[type="file"]:focus {
+        border-color: #2980b9;
+        outline: none;
+      }
+      button {
+        background: linear-gradient(90deg, #2980b9 60%, #6dd5fa 100%);
+        color: #fff;
+        border: none;
+        padding: 10px 24px;
+        border-radius: 8px;
+        font-size: 1.05rem;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 2px 8px #2980b91a;
+        transition: background 0.2s, transform 0.1s;
+        margin-top: 8px;
+        margin-bottom: 8px;
+        display: block;
+      }
+      button:active {
+        transform: scale(0.97);
+      }
+      button:hover {
+        background: linear-gradient(90deg, #3498db 60%, #2980b9 100%);
+      }
+      .result {
+        background: #f4f8fb;
+        border: 1.5px solid #dbe9f6;
+        padding: 12px 10px;
+        margin-top: 14px;
+        border-radius: 8px;
+        white-space: pre-wrap;
+        color: #2c3e50;
+        font-size: 1em;
+        min-height: 24px;
+        position: relative;
+        transition: border 0.2s;
+        overflow-x: auto;
+        width: 100%;
+        max-width: 650px;
+        box-sizing: border-box;
+        display: none;
+        text-align: center;
+      }
+      .small {
+        font-size: 0.98em;
+        color: #888;
+        margin-left: 8px;
+      }
+      .download-link {
+        margin-top: 12px;
+        display: none;
+        background: #eaf6ff;
+        color: #2366a8;
+        padding: 8px 18px;
+        border-radius: 7px;
+        text-decoration: none;
+        font-weight: 500;
+        border: 1px solid #dbe9f6;
+        transition: background 0.2s, color 0.2s;
+        font-size: 1em;
+      }
+      .download-link:hover {
+        background: #dbe9f6;
+        color: #2980b9;
+      }
+      .spinner {
+        display: inline-block;
+        width: 28px;
+        height: 28px;
+        vertical-align: middle;
+      }
+      .spinner:after {
+        content: " ";
+        display: block;
+        width: 24px;
+        height: 24px;
+        margin: 2px;
+        border-radius: 50%;
+        border: 4px solid #2980b9;
+        border-color: #2980b9 transparent #6dd5fa transparent;
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+      .table-result {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 8px;
+        background: #f8fbff;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 1px 4px #0001;
+        font-size: 1em;
+      }
+      .table-result th,
+      .table-result td {
+        padding: 8px 6px;
+        text-align: left;
+      }
+      .table-result th {
+        background: #eaf6ff;
+        color: #2366a8;
+        font-weight: 600;
+        border-bottom: 2px solid #dbe9f6;
+      }
+      .table-result tr:nth-child(even) {
+        background: #f4f8fb;
+      }
+      .table-result tr:hover {
+        background: #e0eafc;
+      }
+      @media (max-width: 1200px) {
+        main {
+          flex-direction: column;
+          gap: 16px;
+          align-items: center;
+          padding: 0 1vw;
+        }
+        section.container {
+          max-width: 98vw;
+          min-width: 0;
+        }
+        textarea,
+        input[type="file"],
+        .result,
+        label {
+          max-width: 98vw;
+        }
+      }
+      @media (max-width: 700px) {
+        .main-wrapper {
+          padding: 4px 1vw;
+        }
+        header h1 {
+          font-size: 1.1rem;
+        }
+        header p {
+          font-size: 0.95rem;
+        }
+        section.container {
+          padding: 8px 2vw;
+          min-width: 0;
+        }
+        h2 {
+          font-size: 1rem;
+        }
+        .table-result th,
+        .table-result td {
+          font-size: 0.97em;
+        }
+        textarea {
+          min-height: 60px;
+        }
+        .result {
+          max-width: 100vw;
+        }
+      }
+      footer {
+        text-align: center;
+        color: #888;
+        font-size: 0.95em;
+        margin: 18px 0 8px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="main-wrapper">
+      <header>
+        <h1>SiMCCIT - Categorização Terapêutica</h1>
+        <p>Classifique frases ou arquivos CSV de forma rápida e visual</p>
+      </header>
+      <main>
+        <section class="container" aria-labelledby="frases-title">
+          <h2 id="frases-title">Categorização de Frases</h2>
+          <label for="cliente">Frases do Cliente:</label>
+          <form id="textForm" autocomplete="off">
+            <textarea
+              id="cliente"
+              name="cliente"
+              placeholder="Tenho me sentido ansioso."
+              aria-label="Frases do Cliente"
+            ></textarea>
+            <label for="terapeuta">Frases do Terapeuta:</label>
+            <textarea
+              id="terapeuta"
+              name="terapeuta"
+              placeholder="Como você está hoje?"
+              aria-label="Frases do Terapeuta"
+            ></textarea>
+            <button type="submit" id="btnText" aria-busy="false">
+              Categorizar Frases
+            </button>
+          </form>
+          <div
+            id="textResult"
+            class="result"
+            role="status"
+            aria-live="polite"
+          ></div>
+        </section>
+        <section class="container" aria-labelledby="csv-title">
+          <h2 id="csv-title">Categorização via CSV</h2>
+          <form id="csvForm" enctype="multipart/form-data" autocomplete="off">
+            <label for="csvFile">Selecione um arquivo CSV:</label>
+            <input
+              type="file"
+              id="csvFile"
+              name="file"
+              accept=".csv"
+              aria-label="Arquivo CSV"
+            />
+            <button type="submit" id="btnCsv" aria-busy="false">
+              Categorizar CSV
+            </button>
+            <a
+              onclick="downloadSampleCSV()"
+              href="#"
+              class="small"
+              download
+              >Baixar exemplo de CSV</a
+            >
+          </form>
+          <div
+            id="csvResult"
+            class="result"
+            role="status"
+            aria-live="polite"
+          ></div>
+          <a id="downloadLink" class="download-link">Baixar CSV Categorizado</a>
+        </section>
+      </main>
+      <footer>&copy; 2025 SiMCCIT. Categorização Terapêutica.</footer>
+    </div>
+    <script>
+      function showSpinner(div) {
+        div.innerHTML = '<span class="spinner"></span> Processando...';
+        div.style.display = "block";
+      }
+
+      function showError(div, msg) {
+        div.textContent = msg;
+        div.style.display = "block";
+        div.style.color = "#c0392b";
+      }
+
+      function showSuccess(div, msg) {
+        div.textContent = msg;
+        div.style.display = "block";
+        div.style.color = "#2c3e50";
+      }
+
+      function downloadSampleCSV() {
+        const sampleData = `Fala_Terapeuta,Fala_Cliente
+        "Como você está se sentindo hoje?","Estou me sentindo muito ansioso ultimamente"
+        "Entendo que isso deve ser difícil para você","Não consigo parar de pensar nos problemas"
+        "Isso é completamente normal e esperado",""
+        "Vamos focar no que podemos controlar agora","Sinto que não tenho controle sobre nada"
+        "Você mencionou que se sente ansioso, pode falar mais sobre isso?","É uma sensação constante de preocupação"
+        "Pesquisas mostram que exercícios de respiração podem ajudar",""
+        "Isso me faz pensar sobre suas prioridades na vida","Realmente nunca parei para pensar nisso"
+        "Você tem força para superar isso, tenho certeza","Obrigado, preciso ouvir isso"
+        "O que você pensa sobre essa situação que estamos discutindo?",""
+        "Então você está dizendo que se sente sobrecarregado","Exatamente, é como se fosse demais para mim"`;
+
+        const blob = new Blob([sampleData], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'exemplo_bert_reptile.csv';
+        link.click();
+        
+        showNotification('success', 'CSV exemplo BERT baixado!');
+      }
+
+      document.getElementById("textForm").onsubmit = async function (e) {
+        e.preventDefault();
+        const terapeuta = document.getElementById("terapeuta").value.trim();
+        const cliente = document.getElementById("cliente").value.trim();
+
+        const body_obj = {
+          text: terapeuta,
+          contexto_cliente: cliente,
+        };
+        const resultDiv = document.getElementById("textResult");
+        const btn = document.getElementById("btnText");
+        resultDiv.style.display = "none";
+        btn.disabled = true;
+        btn.setAttribute("aria-busy", "true");
+        btn.textContent = "Processando...";
+        showSpinner(resultDiv);
+
+        try {
+          if (!terapeuta.trim()) {
+            showError(resultDiv, "Por favor, preencha pelo menos uma frase.");
+            btn.disabled = false;
+            btn.setAttribute("aria-busy", "false");
+            btn.textContent = "Categorizar Frases";
+            return;
+          }
+          const res = await fetch("http://localhost:5000/classify", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body_obj),
+          });
+          if (!res.ok) throw new Error("Erro ao categorizar");
+          const data = await res.json();
+
+          let table = `<table class="table-result" aria-label="Resultado da categorização">
+          <thead>
+            <tr>
+              <th>Cliente</th>
+              <th>Terapeuta</th>
+              <th>Categoria</th>
+            </tr>
+          </thead>
+          <tbody>
+              <tr>
+                <td>${
+                  data.contexto_cliente == null ? "" : data.contexto_cliente
+                }</td>  
+                <td>${data.texto_terapeuta}</td>
+                <td>${data.resultado.categoria} - ${data.resultado.categoria_completa}</td>
+              </tr>
+          </tbody>
+        </table>`;
+          resultDiv.innerHTML = table;
+          resultDiv.style.color = "#2c3e50";
+          resultDiv.style.display = "block";
+        } catch (err) {
+          showError(resultDiv, "Erro: " + err.message);
+        } finally {
+          btn.disabled = false;
+          btn.setAttribute("aria-busy", "false");
+          btn.textContent = "Categorizar Frases";
+        }
+      };
+
+      document.getElementById("csvForm").onsubmit = async function (e) {
+        e.preventDefault();
+        const fileInput = document.getElementById("csvFile");
+        const resultDiv = document.getElementById("csvResult");
+        const downloadLink = document.getElementById("downloadLink");
+        const btn = document.getElementById("btnCsv");
+        resultDiv.style.display = "none";
+        downloadLink.style.display = "none";
+        btn.disabled = true;
+        btn.setAttribute("aria-busy", "true");
+        btn.textContent = "Processando...";
+
+        if (!fileInput.files.length) {
+          showError(resultDiv, "Selecione um arquivo CSV.");
+          btn.disabled = false;
+          btn.setAttribute("aria-busy", "false");
+          btn.textContent = "Categorizar CSV";
+          return;
+        }
+
+        showSpinner(resultDiv);
+
+        const formData = new FormData();
+        formData.append("file", fileInput.files[0]);
+
+        try {
+          const res = await fetch("http://localhost:5000/processar-csv", {
+            method: "POST",
+            body: formData,
+          });
+          if (!res.ok) {
+            let errMsg = "Erro ao categorizar CSV";
+            try {
+              const err = await res.json();
+              errMsg = err.message || errMsg;
+            } catch {}
+            throw new Error(errMsg);
+          }
+          const blob = await res.blob();
+          const url = window.URL.createObjectURL(blob);
+          downloadLink.href = url;
+          downloadLink.download = "categorizado.csv";
+          downloadLink.textContent = "Baixar CSV Categorizado";
+          downloadLink.style.display = "inline-block";
+          showSuccess(resultDiv, "Arquivo categorizado pronto para download.");
+        } catch (err) {
+          showError(resultDiv, "Erro: " + err.message);
+        } finally {
+          btn.disabled = false;
+          btn.setAttribute("aria-busy", "false");
+          btn.textContent = "Categorizar CSV";
+        }
+      };
+    </script>
+  </body>
+</html>

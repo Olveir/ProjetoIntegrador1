@@ -1,0 +1,40 @@
+services:
+  nestjs:
+    build: .
+    container_name: nestjs-app
+    environment:
+      - MODEL=llama3:8b
+      - API_URL=http://ollama:11434/v1/chat/completions
+    ports:
+      - "3000:3000"
+    depends_on:
+      - ollama
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    environment:
+      - OLLAMA_MODELS=llama3:8b
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+    entrypoint: >
+      sh -c "
+        ollama serve &
+        until ollama list | grep 'llama3:8b'; do
+          ollama pull llama3:8b || sleep 5;
+        done;
+        tail -f /dev/null
+      "
+
+volumes:
+  ollama_data:
