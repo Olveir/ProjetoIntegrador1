@@ -1,2 +1,3 @@
 *.pt filter=lfs diff=lfs merge=lfs -text
+*.pth filter=lfs diff=lfs merge=lfs -text
 API[[:space:]]Modelo[[:space:]]Bert/API/models/llama-pth-checkpoint/melhor_modelo_pt.pt filter=lfs diff=lfs merge=lfs -text
