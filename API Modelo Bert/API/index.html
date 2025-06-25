@@ -331,8 +331,7 @@
               Categorizar CSV
             </button>
             <a
-              onclick="downloadSampleCSV()"
-              href="#"
+              href="arquivo_exemplo.csv"
               class="small"
               download
               >Baixar exemplo de CSV</a
@@ -367,27 +366,10 @@
         div.style.color = "#2c3e50";
       }
 
-      function downloadSampleCSV() {
-        const sampleData = `Fala_Terapeuta,Fala_Cliente
-        "Como você está se sentindo hoje?","Estou me sentindo muito ansioso ultimamente"
-        "Entendo que isso deve ser difícil para você","Não consigo parar de pensar nos problemas"
-        "Isso é completamente normal e esperado",""
-        "Vamos focar no que podemos controlar agora","Sinto que não tenho controle sobre nada"
-        "Você mencionou que se sente ansioso, pode falar mais sobre isso?","É uma sensação constante de preocupação"
-        "Pesquisas mostram que exercícios de respiração podem ajudar",""
-        "Isso me faz pensar sobre suas prioridades na vida","Realmente nunca parei para pensar nisso"
-        "Você tem força para superar isso, tenho certeza","Obrigado, preciso ouvir isso"
-        "O que você pensa sobre essa situação que estamos discutindo?",""
-        "Então você está dizendo que se sente sobrecarregado","Exatamente, é como se fosse demais para mim"`;
-
-        const blob = new Blob([sampleData], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = 'exemplo_bert_reptile.csv';
-        link.click();
-        
-        showNotification('success', 'CSV exemplo BERT baixado!');
-      }
+      function hideResult(element) {
+        element.style.display = "none";
+        element.innerHTML = "";
+    }
 
       document.getElementById("textForm").onsubmit = async function (e) {
         e.preventDefault();
@@ -458,7 +440,7 @@
         const resultDiv = document.getElementById("csvResult");
         const downloadLink = document.getElementById("downloadLink");
         const btn = document.getElementById("btnCsv");
-        resultDiv.style.display = "none";
+        hideResult(resultDiv);
         downloadLink.style.display = "none";
         btn.disabled = true;
         btn.setAttribute("aria-busy", "true");
@@ -490,12 +472,22 @@
             } catch {}
             throw new Error(errMsg);
           }
+
+          const disposition = res.headers.get('Content-Disposition');
+          let filename = 'resultado_classificado.csv'; 
+          if (disposition && disposition.includes('attachment')) {
+            const filenameMatch = disposition.match(/filename="([^"]+)"/);
+            if (filenameMatch && filenameMatch[1]) {
+              filename = filenameMatch[1];
+            }
+          }
+
           const blob = await res.blob();
           const url = window.URL.createObjectURL(blob);
           downloadLink.href = url;
-          downloadLink.download = "categorizado.csv";
-          downloadLink.textContent = "Baixar CSV Categorizado";
-          downloadLink.style.display = "inline-block";
+          downloadLink.download = filename;
+          downloadLink.textContent = `Clique para baixar: ${filename}`;
+          downloadLink.style.display = "block";
           showSuccess(resultDiv, "Arquivo categorizado pronto para download.");
         } catch (err) {
           showError(resultDiv, "Erro: " + err.message);
